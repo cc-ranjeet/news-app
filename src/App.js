@@ -45,6 +45,7 @@ const Apps = props => {
   }
   if(payload.language) {
     payload.country = "";
+    
   }
 
   params = new URLSearchParams(payload).toString();

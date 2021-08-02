@@ -43,11 +43,14 @@ const Apps = props => {
   } else if(urlParameters && ['international'].includes(urlParameters.slug)) {
     payload["category"] = "general" 
   }
+  if(payload.language) {
+    payload.country = "";
+  }
 
   params = new URLSearchParams(payload).toString();
   var options = {
   method: 'GET',
-  url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=3260baa80697482f9dd14101776c04d9&'+params  
+  url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=a7d3eb4693e34f67aaef7de2216aecb4&'+params  
 };
 axios.request(options).then(function (response) {
   if(response.data && response.data.status === "ok") {

@@ -9,6 +9,7 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import Nav from "./components/nav";
 import Post from "./components/post";
+import Settings from "./components/settings";
 
 const Routing = () => {
   const onchange = (value) => {
@@ -29,6 +30,7 @@ const Routing = () => {
               <Route exact path="/" component={App} />
               <Route exact path="/category/:slug" component={App} />
               <Route exact path="/news-details" component={Post} />
+              <Route exact path="/settings" component={Settings} />
             </Switch>
           </div>
           <Footer />

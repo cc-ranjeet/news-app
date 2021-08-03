@@ -1,74 +1,79 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import './App.css';
-import {Link, useLocation, useParams} from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import News from "./components/news";
-import EventBus from 'eventing-bus';  
+import EventBus from 'eventing-bus';
 import NoData from "./no-data.jpg";
+import Skeleton from 'react-loading-skeleton';
 var axios = require("axios").default;
 
 const Apps = props => {
-  const urlParameters  = useParams();
-   const [newsState, setNewsState] = useState({
+  const urlParameters = useParams();
+  const [newsState, setNewsState] = useState({
     news: [
     ]
   })
 
-   const [renders, setRenders] = useState(1);
+  const [renders, setRenders] = useState(0);
 
-   const [search, setSearch] = useState({
+  const [search, setSearch] = useState({
     country: '',
     q: '',
-    language : '',
+    language: '',
     sources: ''
   });
   const [newsCategory, setNewsCategory] = useState(props.location.pathname)
   const newsFeed = () => {
-  let user = JSON.parse(localStorage.getItem("user_info"));
-  let payload = search;
-  let params = null;
-  if(payload.country && payload.sources) {
-    payload.sources = '';
-  }
-  if(!payload.country && !payload.sources) {
-    payload.country = (user && user.country) ? user.country.toLowerCase() : "us";
-  } 
-  if(urlParameters && urlParameters.slug) {
-    payload.sources = "";
-    payload["category"] = urlParameters.slug; 
-  } else {
-    payload.category = "";
-  }
-  console.log(payload);
-  if(urlParameters && ['regional', 'national'].includes(urlParameters.slug)) {
-    payload.category = "";
-  } else if(urlParameters && ['international'].includes(urlParameters.slug)) {
-    payload["category"] = "general" 
-  }
-  if(payload.language) {
-    payload.country = "";
-    
+    setRenders(0);
+    let user = JSON.parse(localStorage.getItem("user_info"));
+    let payload = search;
+    let params = null;
+    if (payload.country && payload.sources) {
+      payload.sources = '';
+    }
+    if (!payload.country && !payload.sources) {
+      payload.country = (user && user.country) ? user.country.toLowerCase() : "us";
+    }
+    if (urlParameters && urlParameters.slug) {
+      payload.sources = "";
+      payload["category"] = urlParameters.slug;
+    } else {
+      payload.category = "";
+    }
+    if (urlParameters && ['regional', 'national'].includes(urlParameters.slug)) {
+      payload.category = "";
+    } else if (urlParameters && ['international'].includes(urlParameters.slug)) {
+      payload["category"] = "general"
+    }
+    if (payload.language) {
+      payload.country = "";
+
+    }
+
+    params = new URLSearchParams(payload).toString();
+    var options = {
+      method: 'GET',
+      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=3260baa80697482f9dd14101776c04d9&' + params
+    };
+    axios.request(options).then(function (response) {
+      if (response.data && response.data.status === "ok") {
+        newsState.news = setNewsState({
+          news: response.data.articles
+        })
+      } else {
+
+      }
+
+    }).catch(function (error) {
+      console.error(error);
+    }).finally(() => {
+      setRenders(1);
+    });
   }
 
-  params = new URLSearchParams(payload).toString();
-  var options = {
-  method: 'GET',
-    url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=622058ee8fa14beeab599e6ccbd8fafc&'+params
-};
-axios.request(options).then(function (response) {
-  if(response.data && response.data.status === "ok") {
-      newsState.news = setNewsState({
-      news: response.data.articles
-  })
-  }
-  
-}).catch(function (error) {
-  console.error(error);
-});
-   }
-
-   EventBus.on("searchNews", (data) => {
+  EventBus.on("searchNews", (data) => {
     setSearch(data);
-   });
+  });
 
   EventBus.on("setSearched", (data) => {
     search.country = setSearch({
@@ -79,23 +84,26 @@ axios.request(options).then(function (response) {
   EventBus.on("setSearched", (data) => {
     setSearch(data);
   });
-useEffect(() => {
+  useEffect(() => {
     newsFeed()
-}, [search, urlParameters.slug]);
+  }, [search, urlParameters.slug]);
 
-  return ( 
-        <div>  
-        {newsState.news .length > 0 ?
+  return (
+    <div>
+      <Skeleton count={50} style={{ display: renders ? "none" : "block", fontSize: 20, lineHeight: 2 }}  />
+      <div style={{ display: renders ? "block" : "none" }}>
+      {renders && newsState.news.length > 0 ?
         <div className="row">
-      {newsState.news.map((value, i) => {    
-           return (value.author ? (<News key={i} uniqueKey={i} news={value} />) : ("")) 
-        })} 
-    </div>
-    :
-     <div className="row">
-     <center><img className="" src={NoData} alt="Logo" /></center>
-     </div>
-  }
+          {newsState.news.map((value, i) => {
+            return (value.author ? (<News key={i} uniqueKey={i} news={value} />) : (""))
+          })}
+        </div>
+        :
+        <div className="row">
+          <center><img className="" src={NoData} alt="Logo" /></center>
+        </div>
+      }
+      </div>
     </div>
   );
 }

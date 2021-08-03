@@ -12,27 +12,27 @@ import Post from "./components/post";
 
 const Routing = () => {
   const onchange = (value) => {
-  	console.log(value);
+    console.log(value);
   }
-  return(
+  return (
     <Router>
-    <div className="container-fluid">
-    <div className="row">
-      <Header onchange={(e) => { onchange(e) }}/>
-    </div>
-    <div className="row">
-    <div className="col-sm-2 sidebar-custom">
-      <Nav/>
-      </div>
-      <div className="col-sm-10">
-      <Switch>
-        <Route exact path="/" component={App} />
-        <Route exact path="/category/:slug" component={App} />
-        <Route exact path="/news-details" component={Post} />
-      </Switch>
-      </div>
-      <Footer/>
-      </div>
+      <div className="container-fluid">
+        <div className="row">
+          <Header onchange={(e) => { onchange(e) }} />
+        </div>
+        <div className="row">
+          <div className="col-sm-2 sidebar-custom">
+            <Nav />
+          </div>
+          <div className="col-sm-10">
+            <Switch>
+              <Route exact path="/" component={App} />
+              <Route exact path="/category/:slug" component={App} />
+              <Route exact path="/news-details" component={Post} />
+            </Switch>
+          </div>
+          <Footer />
+        </div>
       </div>
     </Router>
   )

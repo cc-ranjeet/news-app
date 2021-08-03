@@ -18,18 +18,19 @@ const Apps = props => {
    const [search, setSearch] = useState({
     country: '',
     q: '',
-    language : 'en',
+    language : '',
     sources: ''
   });
   const [newsCategory, setNewsCategory] = useState(props.location.pathname)
   const newsFeed = () => {
+  let user = JSON.parse(localStorage.getItem("user_info"));
   let payload = search;
   let params = null;
   if(payload.country && payload.sources) {
     payload.sources = '';
   }
   if(!payload.country && !payload.sources) {
-    payload.country = "us";    
+    payload.country = (user && user.country) ? user.country.toLowerCase() : "us";
   } 
   if(urlParameters && urlParameters.slug) {
     payload.sources = "";
@@ -37,7 +38,7 @@ const Apps = props => {
   } else {
     payload.category = "";
   }
-
+  console.log(payload);
   if(urlParameters && ['regional', 'national'].includes(urlParameters.slug)) {
     payload.category = "";
   } else if(urlParameters && ['international'].includes(urlParameters.slug)) {
@@ -51,7 +52,7 @@ const Apps = props => {
   params = new URLSearchParams(payload).toString();
   var options = {
   method: 'GET',
-  url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=a7d3eb4693e34f67aaef7de2216aecb4&'+params  
+    url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=622058ee8fa14beeab599e6ccbd8fafc&'+params
 };
 axios.request(options).then(function (response) {
   if(response.data && response.data.status === "ok") {
@@ -68,6 +69,16 @@ axios.request(options).then(function (response) {
    EventBus.on("searchNews", (data) => {
     setSearch(data);
    });
+
+  EventBus.on("setSearched", (data) => {
+    search.country = setSearch({
+      ...search,
+      country: data
+    });
+  });
+  EventBus.on("setSearched", (data) => {
+    setSearch(data);
+  });
 useEffect(() => {
     newsFeed()
 }, [search, urlParameters.slug]);

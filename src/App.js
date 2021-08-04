@@ -53,7 +53,7 @@ const Apps = props => {
     params = new URLSearchParams(payload).toString();
     var options = {
       method: 'GET',
-      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=3260baa80697482f9dd14101776c04d9&' + params
+      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=622058ee8fa14beeab599e6ccbd8fafc&' + params
     };
     axios.request(options).then(function (response) {
       if (response.data && response.data.status === "ok") {

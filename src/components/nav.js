@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee, faGlobe, faFlag, faCompass, faFilm, faBicycle, faBriefcase, faMicroscope, faFlask, faMicrochip, faNewspaper, faWrench } from '@fortawesome/free-solid-svg-icons'
+import { faCoffee, faGlobe, faFlag, faCompass, faFilm, faBicycle, faBriefcase, faMicroscope, faFlask, faMicrochip, faNewspaper, faWrench, faMugHot, faVideo } from '@fortawesome/free-solid-svg-icons'
 import './nav.css';
 
 const nav = (props) => {
@@ -9,7 +9,7 @@ const nav = (props) => {
     <nav className="navbar bg-light">
       <ul className="navbar-nav">
         <li className="nav-item">
-          <Link className="nav-link" to="/"><FontAwesomeIcon icon={faCoffee} color="" />&nbsp; Top Headlines</Link></li>
+          <Link className="nav-link" to="/"><FontAwesomeIcon icon={faMugHot} color="" />&nbsp; Top Headlines</Link></li>
         <li className="nav-item">
           <Link className="nav-link" to="/category/regional"><FontAwesomeIcon icon={faCompass} color="" />&nbsp; Regional</Link></li>
         <li className="nav-item">
@@ -30,6 +30,8 @@ const nav = (props) => {
           <Link className="nav-link" to="/category/technology"><FontAwesomeIcon icon={faMicrochip} color="" />&nbsp; Technology</Link></li>
         <li className="nav-item">
           <Link className="nav-link" to="/category/general"><FontAwesomeIcon icon={faNewspaper} color="" />&nbsp; General</Link></li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/video-feeds"><FontAwesomeIcon icon={faVideo} color="" />&nbsp; Video Feeds</Link></li>
         <li className="nav-item">
           <Link className="nav-link" to="/settings"><FontAwesomeIcon icon={faWrench} color="" />&nbsp; Setting</Link></li>
       </ul>

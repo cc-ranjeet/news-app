@@ -15,11 +15,9 @@ const Header = (props) => {
     sources: ''
   });
   const [getUserLocation, setUserLocation] = useState();
-  const handleChange = event => {
-    EventBus.publish("searchNews", searchData);
-  }
 
   const filter = event => {
+    localStorage.setItem("searchStored", JSON.stringify({ ...searchData, [event.target.name]: event.target.value }));
     EventBus.publish("setSearched", { ...searchData, [event.target.name]: event.target.value });
     setSearchData({
       ...searchData,
@@ -28,22 +26,26 @@ const Header = (props) => {
 
   }
   useEffect(() => {
-    var options = {
-      method: 'GET',
-      url: 'https://ipinfo.io?token=f525f67c6de7c8'
-    };
-    axios.request(options).then(function (response) {
-      if (response.data) {
-        localStorage.setItem("user_info", JSON.stringify(response.data));
-        EventBus.publish("country", response.data.country.toLowerCase());
-        searchData.country = setSearchData({
-          country: searchData.country ? searchData.country : response.data.country.toLowerCase()
-        });
-      }
+    if (localStorage.getItem("searchStored")) {
+      setSearchData(JSON.parse(localStorage.getItem("searchStored")));
+    } else {
+      var options = {
+        method: 'GET',
+        url: 'https://ipinfo.io?token=f525f67c6de7c8'
+      };
+      axios.request(options).then(function (response) {
+        if (response.data) {
+          localStorage.setItem("user_info", JSON.stringify(response.data));
+          EventBus.publish("setSearched", { ...searchData, country: searchData.country ? searchData.country : response.data.country.toLowerCase() });
+          searchData.country = setSearchData({
+            country: searchData.country ? searchData.country : response.data.country.toLowerCase()
+          });
+        }
 
-    }).catch(function (error) {
-      console.error(error);
-    });
+      }).catch(function (error) {
+        console.error(error);
+      });
+    }
 
   }, []);
 
@@ -96,7 +98,7 @@ const Header = (props) => {
                 <option value="nbc-news">NBC News</option>
                 <option value="the-times-of-india">The Time of India</option>
               </select>
-              <input className="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search" onChange={filter} />
+              <input className="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search" value={searchData.q ? searchData.q : "" } onChange={filter} />
             </form>
           </div>
         </div>

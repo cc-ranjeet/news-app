@@ -24,36 +24,31 @@ const Apps = props => {
   });
   const [newsCategory, setNewsCategory] = useState(props.location.pathname)
   const newsFeed = () => {
-    setRenders(0);
-    let user = JSON.parse(localStorage.getItem("user_info"));
+    //console.log("search", search);
+    setRenders(0);    
     let payload = search;
     let params = null;
-    if (payload.country && payload.sources) {
-      payload.sources = '';
-    }
-    if (!payload.country && !payload.sources) {
-      payload.country = (user && user.country) ? user.country.toLowerCase() : "us";
-    }
-    if (urlParameters && urlParameters.slug) {
-      payload.sources = "";
-      payload["category"] = urlParameters.slug;
+    //console.log(payload);
+    
+    if (localStorage.getItem("searchStored")) {
+        payload = JSON.parse(localStorage.getItem("searchStored"));
     } else {
-      payload.category = "";
+       if(JSON.parse(localStorage.getItem("user_info"))){
+         let user = JSON.parse(localStorage.getItem("user_info"));
+         payload.country = user.country.toLowerCase();
+       }      
     }
-    if (urlParameters && ['regional', 'national'].includes(urlParameters.slug)) {
-      payload.category = "";
-    } else if (urlParameters && ['international'].includes(urlParameters.slug)) {
-      payload["category"] = "general"
-    }
-    if (payload.language) {
-      payload.country = "";
-
-    }
-
+    if (urlParameters.slug) {
+        payload.sources = ''; 
+      payload.category = ['regional', 'national'].includes(urlParameters.slug) ? "" : ['international'].includes(urlParameters.slug) ? "general" : urlParameters.slug;
+    } else if(payload.language) {
+        payload.country = "";
+    }    
+    
     params = new URLSearchParams(payload).toString();
     var options = {
       method: 'GET',
-      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=622058ee8fa14beeab599e6ccbd8fafc&' + params
+      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=35c4fe3fb6ea41e9af13210ee4d4e2f0&' + params
     };
     axios.request(options).then(function (response) {
       if (response.data && response.data.status === "ok") {
@@ -84,25 +79,32 @@ const Apps = props => {
   EventBus.on("setSearched", (data) => {
     setSearch(data);
   });
+
+  EventBus.on("country", (data) => {
+    setSearch(data);
+  });
   useEffect(() => {
-    newsFeed()
+    newsFeed();
+    if (localStorage.getItem("background_color")) {
+      document.body.style.backgroundColor = localStorage.getItem("background_color");
+    }
   }, [search, urlParameters.slug]);
 
   return (
     <div>
-      <Skeleton count={50} style={{ display: renders ? "none" : "block", fontSize: 20, lineHeight: 2 }}  />
+      <Skeleton count={50} style={{ display: renders ? "none" : "block", fontSize: 20, lineHeight: 2 }} />
       <div style={{ display: renders ? "block" : "none" }}>
-      {renders && newsState.news.length > 0 ?
-        <div className="row">
-          {newsState.news.map((value, i) => {
-            return (value.author ? (<News key={i} uniqueKey={i} news={value} />) : (""))
-          })}
-        </div>
-        :
-        <div className="row">
-          <center><img className="" src={NoData} alt="Logo" /></center>
-        </div>
-      }
+        {renders && newsState.news.length > 0 ?
+          <div className="row">
+            {newsState.news.map((value, i) => {
+              return (value.author ? (<News key={i} uniqueKey={i} news={value} />) : (""))
+            })}
+          </div>
+          :
+          <div className="row">
+            <center><img className="" src={NoData} alt="Logo" /></center>
+          </div>
+        }
       </div>
     </div>
   );

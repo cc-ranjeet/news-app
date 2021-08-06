@@ -41,14 +41,15 @@ const Apps = props => {
     if (urlParameters.slug) {
         payload.sources = ''; 
       payload.category = ['regional', 'national'].includes(urlParameters.slug) ? "" : ['international'].includes(urlParameters.slug) ? "general" : urlParameters.slug;
-    } else if(payload.language) {
+    } 
+    if(payload.language) {
         payload.country = "";
     }    
     
     params = new URLSearchParams(payload).toString();
     var options = {
       method: 'GET',
-      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=35c4fe3fb6ea41e9af13210ee4d4e2f0&' + params
+      url: 'https://newsapi.org/v2/top-headlines?sortBy=popularity&apiKey=622058ee8fa14beeab599e6ccbd8fafc&' + params
     };
     axios.request(options).then(function (response) {
       if (response.data && response.data.status === "ok") {
